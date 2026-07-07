@@ -11,6 +11,7 @@ import com.hrms.auth.entity.User;
 import com.hrms.auth.repository.UserRepository;
 import com.hrms.auth.security.JwtService;
 import com.hrms.auth.service.AuthenticationService;
+import com.hrms.auth.service.RefreshTokenService;
 import com.hrms.auth.service.RoleService;
 import com.hrms.common.enums.RoleName;
 import com.hrms.common.exception.DuplicateResourceException;
@@ -19,8 +20,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import com.hrms.auth.dto.LoginRequest;
 import com.hrms.auth.dto.LoginResponse;
+import com.hrms.auth.dto.RefreshTokenRequest;
+import com.hrms.auth.dto.RefreshTokenResponse;
 import com.hrms.auth.security.CustomUserDetails;
-import com.hrms.auth.security.JwtService;
 
 @Service
 public class AuthenticationServiceImpl  implements AuthenticationService{
@@ -30,19 +32,22 @@ public class AuthenticationServiceImpl  implements AuthenticationService{
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthenticationServiceImpl(
             UserRepository userRepository,
             RoleService roleService,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
-            JwtService jwtService) {
+            JwtService jwtService,
+            RefreshTokenService refreshTokenService) {
 
         this.userRepository = userRepository;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.refreshTokenService= refreshTokenService;
     }
 
     @Override
@@ -99,12 +104,23 @@ public class AuthenticationServiceImpl  implements AuthenticationService{
 
         String refreshToken = jwtService.generateRefreshToken(userDetails);
 
+        refreshTokenService.revokeUserTokens(user);
+
+        refreshTokenService.createRefreshToken(user, refreshToken);
+
         return LoginResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .expiresIn(900)
                 .build();
+    }
+    
+    @Override
+    public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {
+
+        return refreshTokenService.refreshToken(request);
+
     }
 	
 }

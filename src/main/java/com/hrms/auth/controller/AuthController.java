@@ -10,6 +10,8 @@ import com.hrms.auth.dto.LoginResponse;
 import com.hrms.auth.dto.RegisterRequest;
 import com.hrms.auth.service.AuthenticationService;
 import com.hrms.common.response.ApiResponse;
+import com.hrms.auth.dto.RefreshTokenRequest;
+import com.hrms.auth.dto.RefreshTokenResponse;
 
 import jakarta.validation.Valid;
 
@@ -43,5 +45,18 @@ public class AuthController {
 
 	        return ResponseEntity.ok(
 	                ApiResponse.success("Login successful", response));
+	    }
+	    
+	    @PostMapping("/refresh")
+	    public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshToken(
+	            @Valid @RequestBody RefreshTokenRequest request) {
+
+	        RefreshTokenResponse response =
+	                authenticationService.refreshToken(request);
+
+	        return ResponseEntity.ok(
+	                ApiResponse.success(
+	                        "Token refreshed successfully",
+	                        response));
 	    }
 }
