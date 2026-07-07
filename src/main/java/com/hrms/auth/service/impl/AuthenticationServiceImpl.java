@@ -1,5 +1,6 @@
 package com.hrms.auth.service.impl;
 
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -8,10 +9,18 @@ import com.hrms.auth.dto.RegisterResponse;
 import com.hrms.auth.entity.Role;
 import com.hrms.auth.entity.User;
 import com.hrms.auth.repository.UserRepository;
+import com.hrms.auth.security.JwtService;
 import com.hrms.auth.service.AuthenticationService;
 import com.hrms.auth.service.RoleService;
 import com.hrms.common.enums.RoleName;
 import com.hrms.common.exception.DuplicateResourceException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import com.hrms.auth.dto.LoginRequest;
+import com.hrms.auth.dto.LoginResponse;
+import com.hrms.auth.security.CustomUserDetails;
+import com.hrms.auth.security.JwtService;
 
 @Service
 public class AuthenticationServiceImpl  implements AuthenticationService{
@@ -19,15 +28,21 @@ public class AuthenticationServiceImpl  implements AuthenticationService{
 	private final UserRepository userRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     public AuthenticationServiceImpl(
             UserRepository userRepository,
             RoleService roleService,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            JwtService jwtService) {
 
         this.userRepository = userRepository;
         this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -65,5 +80,31 @@ public class AuthenticationServiceImpl  implements AuthenticationService{
 
     }
 	
+    
+    @Override
+    public LoginResponse login(LoginRequest request) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()));
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found"));
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
+        String accessToken = jwtService.generateAccessToken(userDetails);
+
+        String refreshToken = jwtService.generateRefreshToken(userDetails);
+
+        return LoginResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .tokenType("Bearer")
+                .expiresIn(900)
+                .build();
+    }
 	
 }
