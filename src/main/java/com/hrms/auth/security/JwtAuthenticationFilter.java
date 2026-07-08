@@ -75,7 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	        }
 
 	        filterChain.doFilter(request, response);
-
+	        System.out.println("JWT Filter: " + request.getRequestURI());
 	    }
 	
 }

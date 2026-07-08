@@ -122,5 +122,12 @@ public class AuthenticationServiceImpl  implements AuthenticationService{
         return refreshTokenService.refreshToken(request);
 
     }
+    
+    @Override
+    public void logout(String refreshToken) {
+
+        refreshTokenService.logout(refreshToken);
+
+    }
 	
 }

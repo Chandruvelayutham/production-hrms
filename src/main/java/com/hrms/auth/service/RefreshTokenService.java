@@ -12,4 +12,5 @@ public interface RefreshTokenService {
 	RefreshToken createRefreshToken(User user, String token);
 
     void revokeUserTokens(User user);
+    void logout(String refreshToken);
 }

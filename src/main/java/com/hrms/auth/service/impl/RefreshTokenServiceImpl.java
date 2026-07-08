@@ -82,5 +82,19 @@ public class RefreshTokenServiceImpl implements RefreshTokenService{
 	        return refreshTokenRepository.save(refreshToken);
 
 	    }
+	    
+	    @Override
+	    public void logout(String token) {
+
+	        RefreshToken refreshToken = refreshTokenRepository
+	                .findByToken(token)
+	                .orElseThrow(() ->
+	                        new UnauthorizedException("Invalid refresh token"));
+
+	        refreshToken.setRevoked(true);
+
+	        refreshTokenRepository.save(refreshToken);
+
+	    }
 	
 }

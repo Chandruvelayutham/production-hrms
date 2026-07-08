@@ -15,7 +15,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.hrms.auth.security.JwtAuthenticationFilter;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
+@EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
 

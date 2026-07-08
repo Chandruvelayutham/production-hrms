@@ -57,7 +57,7 @@ public class User extends BaseEntity{
     @Column(name = "credentials_non_expired", nullable = false)
     private boolean credentialsNonExpired = true;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;	
 	
