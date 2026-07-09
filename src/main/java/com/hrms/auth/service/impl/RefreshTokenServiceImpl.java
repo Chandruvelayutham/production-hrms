@@ -13,8 +13,9 @@ import com.hrms.auth.security.CustomUserDetails;
 import com.hrms.auth.security.JwtService;
 import com.hrms.auth.service.RefreshTokenService;
 import com.hrms.common.exception.UnauthorizedException;
-
+import org.springframework.transaction.annotation.Transactional;	
 @Service
+@Transactional
 public class RefreshTokenServiceImpl implements RefreshTokenService{
 
 	    private final RefreshTokenRepository refreshTokenRepository;
