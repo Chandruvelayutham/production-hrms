@@ -4,7 +4,8 @@ package com.hrms.employee.service.impl;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-
+import com.hrms.department.entity.Department;
+import com.hrms.department.repository.DepartmentRepository;
 import com.hrms.company.repository.CompanyRepository;
 import com.hrms.employee.dto.EmployeeRequest;
 import com.hrms.employee.dto.EmployeeResponse;
@@ -19,13 +20,15 @@ public class EmployeeServiceImpl implements EmployeeService{
 
 	private final EmployeeRepository employeeRepository;
     private final CompanyRepository companyRepository;
-
+    private final DepartmentRepository departmentRepository;
     public EmployeeServiceImpl(
             EmployeeRepository employeeRepository,
-            CompanyRepository companyRepository) {
+            CompanyRepository companyRepository,
+            DepartmentRepository departmentRepository) {
 
         this.employeeRepository = employeeRepository;
         this.companyRepository = companyRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     @Override
@@ -43,6 +46,11 @@ public class EmployeeServiceImpl implements EmployeeService{
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Company not found with id: " + request.getCompanyId()));
+        
+        Department department = departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Department not found with id: " + request.getDepartmentId()));
 
         Employee employee = Employee.builder()
                 .employeeCode(request.getEmployeeCode())
@@ -59,6 +67,7 @@ public class EmployeeServiceImpl implements EmployeeService{
                 .active(true)
                 .build();
 
+        employee.setDepartment(department);
         Employee savedEmployee = employeeRepository.save(employee);
 
         return mapToResponse(savedEmployee);
@@ -108,6 +117,11 @@ public class EmployeeServiceImpl implements EmployeeService{
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Company not found with id: " + request.getCompanyId()));
+        
+        Department department = departmentRepository.findById(request.getDepartmentId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Department not found with id: " + request.getDepartmentId()));
 
         employee.setEmployeeCode(request.getEmployeeCode());
         employee.setFirstName(request.getFirstName());
@@ -120,6 +134,8 @@ public class EmployeeServiceImpl implements EmployeeService{
         employee.setEmploymentType(request.getEmploymentType());
         employee.setDesignation(request.getDesignation());
         employee.setCompany(company);
+        employee.setDepartment(department);
+        
 
         Employee updatedEmployee = employeeRepository.save(employee);
 
@@ -156,6 +172,8 @@ public class EmployeeServiceImpl implements EmployeeService{
                 .designation(employee.getDesignation())
                 .companyId(employee.getCompany().getId())
                 .companyName(employee.getCompany().getCompanyName())
+                .departmentId(employee.getDepartment().getId())
+                .departmentName(employee.getDepartment().getDepartmentName())
                 .active(employee.getActive())
                 .build();
     }

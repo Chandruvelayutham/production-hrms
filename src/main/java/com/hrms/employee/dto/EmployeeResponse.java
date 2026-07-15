@@ -41,5 +41,9 @@ public class EmployeeResponse {
 	    private String companyName;
 
 	    private Boolean active;
+	    
+	    private Long departmentId;
+
+	    private String departmentName;
 	
 }

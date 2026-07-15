@@ -5,9 +5,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.hrms.company.entity.Company;
+import com.hrms.department.entity.Department;
 import com.hrms.employee.enums.EmploymentType;
 import com.hrms.employee.enums.Gender;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -59,6 +59,13 @@ public class Employee {
 	    @ManyToOne(fetch = FetchType.LAZY)
 	    @JoinColumn(name = "company_id", nullable = false)
 	    private Company company;
+	    
+	    @ManyToOne(fetch = FetchType.LAZY)
+	    @JoinColumn(name = "department_id")
+	    private Department department;
+
+	 
+	    
 
 	    @Builder.Default
 	    private Boolean active = true;
