@@ -116,7 +116,7 @@ public class DesignationServiceImpl implements DesignationService{
 	    }
 
 	    @Override
-	    public void deleteDesignation(Long id) {
+	    public void deleteDesignation(Long id) {     	
 
 	        Designation designation = designationRepository.findById(id)
 	                .orElseThrow(() ->
