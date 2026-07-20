@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.hrms.common.response.ApiErrorResponse;
+import com.hrms.common.response.ApiResponse;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -31,6 +32,32 @@ public class GlobalExceptionHandler {
 	                .body(response);
 	    }
 
+	 @ExceptionHandler(IllegalStateException.class)
+	 public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(
+	         IllegalStateException ex) {
+
+	     return ResponseEntity
+	             .status(HttpStatus.CONFLICT)
+	             .body(
+	                     ApiResponse.error(
+	                             ex.getMessage()
+	                     )
+	             );
+	 }
+	 
+	 @ExceptionHandler(DuplicateResourceException.class)
+	 public ResponseEntity<ApiResponse<Void>>
+	         handleDuplicateResourceException(
+	                 DuplicateResourceException ex) {
+
+	     return ResponseEntity
+	             .status(HttpStatus.CONFLICT)
+	             .body(
+	                     ApiResponse.error(
+	                             ex.getMessage()
+	                     )
+	             );
+	 }
 	
 	
 }
