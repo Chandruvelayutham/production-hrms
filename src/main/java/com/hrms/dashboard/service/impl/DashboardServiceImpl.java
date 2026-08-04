@@ -23,6 +23,9 @@ import com.hrms.leave.repository.LeaveApplicationRepository;
 import com.hrms.common.exception.ResourceNotFoundException;
 import com.hrms.department.repository.DepartmentRepository;
 import lombok.RequiredArgsConstructor;
+import com.hrms.dashboard.dto.HolidaySummary;
+import com.hrms.holiday.entity.Holiday;
+import com.hrms.holiday.repository.HolidayRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +41,8 @@ public class DashboardServiceImpl implements DashboardService{
     private final LeaveApplicationRepository leaveApplicationRepository;
     
     private final DepartmentRepository departmentRepository;
+    
+    private final HolidayRepository holidayRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -63,6 +68,9 @@ public class DashboardServiceImpl implements DashboardService{
         
         DepartmentSummary departmentSummary =
                 buildDepartmentSummary(company);
+        
+        List<HolidaySummary> upcomingHolidays =
+                buildUpcomingHolidays(company);
 
         return DashboardResponse.builder()
                 .companyId(companyId)
@@ -71,8 +79,29 @@ public class DashboardServiceImpl implements DashboardService{
                 .attendanceSummary(attendanceSummary)
                 .leaveSummary(leaveSummary)
                 .departmentSummary(departmentSummary)
+                .upcomingHolidays(upcomingHolidays)
                 .build();
     }
+    
+    private List<HolidaySummary> buildUpcomingHolidays(
+            Company company) {
+
+        LocalDate today = LocalDate.now();
+
+        LocalDate endDate = today.plusDays(30);
+
+        List<Holiday> holidays =
+                holidayRepository
+                        .findByCompanyAndHolidayDateBetweenAndActiveTrue(
+                                company,
+                                today,
+                                endDate);
+
+        return holidays.stream()
+                .map(this::mapToHolidaySummary)
+                .toList();
+    }
+    
     
     private DepartmentSummary buildDepartmentSummary(
             Company company) {
@@ -197,6 +226,18 @@ public class DashboardServiceImpl implements DashboardService{
                 .approved(approved)
                 .rejected(rejected)
                 .cancelled(cancelled)
+                .build();
+    }
+    
+    private HolidaySummary mapToHolidaySummary(
+            Holiday holiday) {
+
+        return HolidaySummary.builder()
+                .id(holiday.getId())
+                .holidayName(holiday.getHolidayName())
+                .holidayDate(holiday.getHolidayDate())
+                .description(holiday.getDescription())
+                .optional(holiday.getOptional())
                 .build();
     }
 }

@@ -1,6 +1,7 @@
 package com.hrms.dashboard.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.*;
 
@@ -22,4 +23,6 @@ public class DashboardResponse {
     private LeaveSummary leaveSummary;
     
     private DepartmentSummary departmentSummary;
+    
+    private List<HolidaySummary> upcomingHolidays;
 }
