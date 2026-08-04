@@ -8,17 +8,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.hrms.company.entity.Company;
 import com.hrms.department.entity.Department;
 
-public interface DepartmentRepository extends JpaRepository<Department, Long>{
+public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
 	boolean existsByDepartmentCode(String departmentCode);
 
-    boolean existsByDepartmentName(String departmentName);
+	boolean existsByDepartmentName(String departmentName);
 
-    List<Department> findByCompany(Company company);
+	List<Department> findByCompany(Company company);
 
-    List<Department> findByActiveTrue();
+	List<Department> findByActiveTrue();
 
-    Optional<Department> findByDepartmentCode(String departmentCode);
+	Optional<Department> findByDepartmentCode(String departmentCode);
+
+	long countByCompany(Company company);
+
+	long countByCompanyAndActive(Company company, Boolean active);
 }
-	
-

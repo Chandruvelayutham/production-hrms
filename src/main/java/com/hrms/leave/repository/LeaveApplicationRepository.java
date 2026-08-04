@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import com.hrms.leave.enums.LeaveStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.hrms.company.entity.Company;
 import com.hrms.employee.entity.Employee;
 import com.hrms.leave.entity.LeaveApplication;
 
@@ -22,21 +23,18 @@ public interface LeaveApplicationRepository extends JpaRepository<LeaveApplicati
 	List<LeaveApplication> findByStatus(LeaveStatus status);
 
 	Optional<LeaveApplication> findByIdAndEmployee(Long id, Employee employee);
-	
-	
-	
+
+	long countByEmployeeCompanyAndStatus(Company company, LeaveStatus status);
+
 	@Query("""
-	        SELECT COUNT(l)
-	        FROM LeaveApplication l
-	        WHERE l.employee.id = :employeeId
-	        AND l.status IN :statuses
-	        AND l.startDate <= :endDate
-	        AND l.endDate >= :startDate
-	        """)
-	long countOverlappingLeave(
-	        @Param("employeeId") Long employeeId,
-	        @Param("startDate") LocalDate startDate,
-	        @Param("endDate") LocalDate endDate,
-	        @Param("statuses") List<LeaveStatus> statuses);
+			SELECT COUNT(l)
+			FROM LeaveApplication l
+			WHERE l.employee.id = :employeeId
+			AND l.status IN :statuses
+			AND l.startDate <= :endDate
+			AND l.endDate >= :startDate
+			""")
+	long countOverlappingLeave(@Param("employeeId") Long employeeId, @Param("startDate") LocalDate startDate,
+			@Param("endDate") LocalDate endDate, @Param("statuses") List<LeaveStatus> statuses);
 
 }

@@ -20,4 +20,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>{
     List<Employee> findByActiveTrue();
 
     Optional<Employee> findByEmployeeCode(String employeeCode);
+    
+    long countByCompany(Company company);
+
+    long countByCompanyAndActive(Company company, Boolean active);
 }
